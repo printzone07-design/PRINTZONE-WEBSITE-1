@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRINT ZONE — An Innovation of Creative Packaging</title>
+  <link rel="icon" type="image/svg+xml" href="/static/img/favicon.svg" />
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body class="premium-ui light-theme min-h-screen flex flex-col lg:flex-row overflow-x-hidden">
+
+  <div id="loginOverlay" class="fixed inset-0 z-50 pz-hero-bg flex items-center justify-center p-4 overflow-y-auto">
+    <canvas id="loginParticles" class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
+    <div class="relative z-10 glass-card rounded-3xl max-w-lg w-full p-6 sm:p-8 text-center space-y-5 border border-amber-400/20 my-auto">
+      <div class="login-brand">
+        <img src="/static/img/logo.jpg" alt="Print Zone — An Innovation of Creative Packaging" class="login-brand-logo" />
+        <h2 class="text-3xl font-extrabold font-display text-white tracking-wide">PRINT ZONE</h2>
+        <p class="text-xs font-bold uppercase tracking-widest text-slate-300 mt-1">An Innovation of Creative Packaging</p>
+      </div>
+      <div id="authMessage" role="status" aria-live="polite" class="hidden text-sm rounded-xl px-3 py-2"></div>
+      <form id="loginForm" class="space-y-3 text-left">
+        <h3 class="font-bold text-white text-lg">Sign in to your account</h3>
+        <label class="block text-xs font-bold text-slate-300 uppercase">Username, email, or mobile
+          <input id="loginIdentifier" required autocomplete="username" class="mt-1 w-full px-3 py-2.5 rounded-xl border text-sm" />
+        </label>
+        <label class="block text-xs font-bold text-slate-300 uppercase">Password
+          <input id="loginPassword" type="password" required autocomplete="current-password" class="mt-1 w-full px-3 py-2.5 rounded-xl border text-sm" />
+        </label>
+        <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 text-slate-950 font-extrabold text-sm shadow-lg shadow-amber-500/20">Sign in</button>
+        <div class="flex justify-between gap-3 text-xs">
+          <button type="button" class="auth-switch text-amber-300 hover:text-amber-200" data-auth-form="registerForm">Create account</button>
+          <button type="button" class="auth-switch text-slate-300 hover:text-white" data-auth-form="resetRequestForm">Forgot password?</button>
+        </div>
+        <a href="/track" class="block text-center text-xs text-slate-300 hover:text-white">Customer? Track your order</a>
+      </form>
+      <form id="registerForm" class="hidden space-y-3 text-left">
+        <h3 class="font-bold text-white text-lg">Create an account</h3>
+        <label class="block text-xs font-bold text-slate-300 uppercase">Full name
+          <input id="registerName" required maxlength="120" autocomplete="name" class="mt-1 w-full px-3 py-2.5 rounded-xl border text-sm" />
+        </label>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <label class="block text-xs font-bold text-slate-300 uppercase">Username
+            <input id="registerUsername" required minlength="3" maxlength="40" autocomplete="username" class="mt-1 w-full px-3 py-2.5 rounded-xl border text-sm" />
+          </label>
+          <label class="block text-xs font-bold text-slate-300 uppercase">Phone
+            <input id="registerPhone" required type="tel" autocomplete="tel" class="mt-1 w-full px-3 py-2.5 rounded-xl border text-sm" />
+          </label>
+        </div>
+        <label class="block text-xs font-bold text-slate-300 uppercase">Email
+          <input id="registerEmail" required type="email" autocomplete="email" class="mt-1 w-full px-3 py-2.5 rounded-xl border text-sm" />
+        </label>
+        <label class="block text-xs font-bold text-slate-300 uppercase">Password (minimum 8 characters)
+          <input id="registerPassword" type="password" required minlength="8" autocomplete="new-password" class="mt-1 w-full px-3 py-2.5 rounded-xl border text-sm" />
+        </label>
+        <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-300 to-amber-500 text-slate-950 font-extrabold text-sm">Create account</button>
+        <button type="button" class="auth-switch w-full text-xs text-amber-300" data-auth-form="loginForm">Back to sign in</button>
+      </form>
+      <form id="resetRequestForm" class="hidden space-y-3 text-left">
+        <h3 class="font-bold text-white text-lg">Reset your password</h3>
+        <label class="block text-xs font-bold text-slate-300 uppercase">Send code to
+          <select id="resetMethod" class="mt-1 w-full px-3 py-2.5 rounded-xl border text-sm">
+            <option value="email">Email</option>
+            <option value="phone">Phone (SMS)</option>
+          </select>
+        </label>
+        <label class="block text-xs font-bold text-slate-300 uppercase">Email or phone
+          <input id="resetIdentifier" required class="mt-1 w-full px-3 py-2.5 rounded-xl border text-sm" />
+        </label>
+        <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-300 to-amber-500 text-slate-950 font-extrabold text-sm">Send reset code</button>
+        <button type="button" class="auth-switch w-full text-xs text-amber-300" data-auth-form="loginForm">Back to sign in</button>
+      </form>
+      <form id="resetConfirmForm" class="hidden space-y-3 text-left">
+        <h3 class="font-bold text-white text-lg">Choose a new password</h3>
+        <p class="text-xs text-slate-300">Enter the 6-digit code sent to your selected email or phone.</p>
+        <label class="block text-xs font-bold text-slate-300 uppercase">Verification code
+          <input id="resetCode" required inputmode="numeric" pattern="[0-9]{6}" maxlength="6" class="mt-1 w-full px-3 py-2.5 rounded-xl border text-sm" />
+        </label>
+        <label class="block text-xs font-bold text-slate-300 uppercase">New password
+          <input id="resetNewPassword" type="password" required minlength="8" autocomplete="new-password" class="mt-1 w-full px-3 py-2.5 rounded-xl border text-sm" />
+        </label>
+        <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-300 to-amber-500 text-slate-950 font-extrabold text-sm">Update password</button>
+        <button type="button" class="auth-switch w-full text-xs text-amber-300" data-auth-form="loginForm">Back to sign in</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Mobile Top Bar -->
+  <header class="lg:hidden bg-[#090d24] text-white px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-md border-b border-white/10">
+    <div>
+      <div>
+        <div class="font-display font-extrabold text-sm tracking-wide text-pink-400">PRINT ZONE</div>
+        <div class="text-[10px] text-cyan-300 tracking-wider uppercase">An Innovation of Creative Packaging</div>
+      </div>
+    </div>
+    <button id="mobileMenuBtn" type="button" class="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-white">
+      <i data-lucide="menu" class="w-5 h-5"></i>
+    </button>
+  </header>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="hidden lg:flex lg:min-h-screen sticky top-0 z-20 shrink-0">
+    <div class="pz-sidebar-drawer">
+      <div class="pz-drawer-brand">
+        <div><strong>Print Zone</strong><small>An Innovation of Creative Packaging</small></div>
+        <button id="sidebarCollapseBtn" type="button" onclick="toggleSidebarCollapsed()" aria-label="Collapse sidebar" title="Collapse sidebar"><i data-lucide="panel-left-close"></i></button>
+      </div>
+      <div class="pz-drawer-heading"><span>WORKSPACE</span><button type="button" onclick="openQuickActions()" aria-label="Quick actions" title="Quick actions">+</button>
+        <div id="quickActionsMenu" class="quick-actions-menu hidden">
+          <button type="button" onclick="quickAction('order')">New order</button>
+          <button type="button" onclick="quickAction('challan')">New challan</button>
+          <button type="button" onclick="quickAction('vendor')">Add vendor</button>
+        </div>
+      </div>
+      <nav class="pz-drawer-nav" aria-label="Main navigation">
+        <button type="button" data-section="dashboard" class="nav-btn active"><i data-lucide="layout-dashboard"></i><span>Dashboard</span></button>
+        <button type="button" data-section="party-order" class="nav-btn"><i data-lucide="users"></i><span>Party &amp; Order</span><span class="nav-quick" onclick="event.stopPropagation(); navTo('party-order');">+</span></button>
+        <button type="button" data-section="pending" class="nav-btn"><i data-lucide="clock-3"></i><span>Pending jobs</span><span id="badge-pending" class="nav-count">0</span></button>
+        <button type="button" data-section="challan" class="nav-btn"><i data-lucide="files"></i><span>Challan</span><span id="badge-challan" class="nav-count">0</span><span class="nav-quick" onclick="event.stopPropagation(); navTo('challan'); switchChallanTab('add');">+</span></button>
+        <button type="button" data-section="vendor" class="nav-btn"><i data-lucide="building-2"></i><span>Vendors</span><span class="nav-quick" onclick="event.stopPropagation(); navTo('vendor'); document.getElementById('newVendorName').focus();">+</span></button>
+        <button type="button" data-section="production" class="nav-btn"><i data-lucide="factory"></i><span>Production</span><span id="badge-production" class="nav-count">0</span></button>
+        <button type="button" data-section="dispatch" class="nav-btn"><i data-lucide="truck"></i><span>Dispatch</span><span id="badge-dispatch" class="nav-count">0</span></button>
+        <button type="button" data-section="accountant" class="nav-btn"><i data-lucide="receipt"></i><span>Accountant</span></button>
+        <button type="button" data-section="paper-stock" class="nav-btn"><i data-lucide="layers"></i><span>Paper stock</span></button>
+        <button type="button" data-section="team" data-role="Admin" class="nav-btn"><i data-lucide="users-round"></i><span>Team access</span></button>
+      </nav>
+      <div class="pz-profile-menu">
+        <div class="pz-profile-avatar">PZ</div>
+        <div class="pz-profile-copy"><strong id="signedInUser">Print Zone team</strong><small>Workspace account</small></div>
+        <button id="themeToggleBtn" type="button" onclick="toggleTheme()" aria-label="Toggle theme" title="Toggle theme"><i id="themeToggleIcon" data-lucide="sun"></i></button>
+        <button id="logoutBtn" type="button" aria-label="Sign out" title="Sign out"><i data-lucide="log-out"></i></button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Workspace -->
+  <main class="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 space-y-6">
+    <div id="toastContainer" class="fixed bottom-4 right-4 z-50 space-y-2 pointer-events-none"></div>
+    <div id="syncStatus" class="workspace-sync-status" data-state="saved" role="status" aria-live="polite">
+      <span class="sync-status-dot" aria-hidden="true"></span>
+      <span id="syncStatusText">Live · All changes saved</span>
+      <button id="syncReloadBtn" type="button" class="hidden" onclick="reloadWorkspaceFromServer()">Reload latest</button>
+    </div>
+
+    <!-- Modal: Full Challan Record -->
+    <div id="challanModal" class="hidden fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="glass-card rounded-2xl max-w-2xl w-full p-6 border border-white/15 space-y-4 max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between border-b border-white/10 pb-3">
+          <div>
+            <span class="text-xs font-bold uppercase tracking-wider text-cyan-400">Full Challan Record</span>
+            <h3 id="modalChallanTitle" class="text-xl font-extrabold text-white font-display">Challan details</h3>
+          </div>
+          <button type="button" onclick="closeChallanModal()" class="p-2 rounded-lg hover:bg-white/10 text-slate-300"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+        <div id="modalChallanBody" class="space-y-4 text-sm"></div>
+      </div>
+    </div>
+
+    <div id="editChallanModal" class="hidden fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="glass-card rounded-2xl max-w-lg w-full p-6 space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-bold font-display">Edit challan</h3>
+          <button type="button" onclick="closeEditChallan()" class="p-2 rounded-lg hover:bg-slate-100" aria-label="Close"><i data-lucide="x"></i></button>
+        </div>
+        <form id="editChallanForm" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <input type="hidden" id="editChallanId" />
+          <label class="text-xs font-medium">Vendor<input id="editChallanVendor" required class="mt-1 w-full px-3 py-2 rounded-lg border text-sm" /></label>
+          <label class="text-xs font-medium">Job type<select id="editChallanJobType" class="mt-1 w-full px-3 py-2 rounded-lg border text-sm"><option value="">From linked jobs</option><option value="Box">Box</option><option value="Label">Label</option><option value="Sticker">Sticker</option></select></label>
+          <label class="text-xs font-medium">Paper type<input id="editChallanPaperType" required class="mt-1 w-full px-3 py-2 rounded-lg border text-sm" /></label>
+          <label class="text-xs font-medium">Paper size<input id="editChallanPaperSize" required class="mt-1 w-full px-3 py-2 rounded-lg border text-sm" /></label>
+          <label class="text-xs font-medium">Quantity<input id="editChallanQty" type="number" min="1" required class="mt-1 w-full px-3 py-2 rounded-lg border text-sm" /></label>
+          <div class="sm:col-span-2 flex justify-end gap-2">
+            <button type="button" onclick="closeEditChallan()" class="px-4 py-2 rounded-lg border">Cancel</button>
+            <button type="submit" class="px-4 py-2 rounded-lg bg-pink-600 text-white font-semibold">Save changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="editPendingJobModal" class="hidden fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="glass-card rounded-2xl max-w-lg w-full p-6 space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-bold font-display">Edit pending job</h3>
+          <button type="button" onclick="closeEditPendingJob()" class="p-2 rounded-lg hover:bg-slate-100" aria-label="Close"><i data-lucide="x"></i></button>
+        </div>
+        <form id="editPendingJobForm" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <input type="hidden" id="editPendingJobId" />
+          <label class="text-xs font-medium sm:col-span-2">Party
+            <select id="editPendingJobParty" required class="mt-1 w-full px-3 py-2 rounded-lg border text-sm"></select>
+          </label>
+          <label class="text-xs font-medium sm:col-span-2">Item name<input id="editPendingJobName" required class="mt-1 w-full px-3 py-2 rounded-lg border text-sm" /></label>
+          <label class="text-xs font-medium">Quantity<input id="editPendingJobQty" type="number" min="1" required class="mt-1 w-full px-3 py-2 rounded-lg border text-sm" /></label>
+          <label class="text-xs font-medium">Size<input id="editPendingJobSize" required class="mt-1 w-full px-3 py-2 rounded-lg border text-sm" /></label>
+          <label class="text-xs font-medium">Printing type<input id="editPendingJobPrinting" required class="mt-1 w-full px-3 py-2 rounded-lg border text-sm" /></label>
+          <label class="text-xs font-medium">Job type<select id="editPendingJobType" required class="mt-1 w-full px-3 py-2 rounded-lg border text-sm"><option value="Box">Box</option><option value="Label">Label</option><option value="Sticker">Sticker</option></select></label>
+          <div class="sm:col-span-2 flex justify-end gap-2">
+            <button type="button" onclick="closeEditPendingJob()" class="px-4 py-2 rounded-lg border">Cancel</button>
+            <button type="submit" class="px-4 py-2 rounded-lg bg-pink-600 text-white font-semibold">Save changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal: Forward Challan to Other Vendor -->
+    <div id="forwardModal" class="hidden fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="glass-card rounded-2xl max-w-md w-full p-6 border border-white/15 space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-bold text-white font-display">Sent to Other Vendor</h3>
+          <button type="button" onclick="closeForwardModal()" class="p-1.5 rounded-lg hover:bg-white/10 text-slate-300"><i data-lucide="x" class="w-4 h-4"></i></button>
+        </div>
+        <form id="forwardVendorForm" class="space-y-3">
+          <input type="hidden" id="forwardChallanId" />
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Select Vendor</label>
+            <select id="forwardVendorSelect" required onchange="toggleForwardManual()" class="w-full px-3 py-2 rounded-lg border text-sm">
+            </select>
+          </div>
+          <div id="forwardManualWrap" class="hidden">
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Vendor Name</label>
+            <input id="forwardManualInput" type="text" placeholder="Enter vendor name" class="w-full px-3 py-2 rounded-lg border text-sm" />
+          </div>
+          <button type="submit" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-pink-500 to-violet-600 text-white font-bold text-sm">Confirm Transfer</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- 1. DASHBOARD -->
+    <section id="sec-dashboard" class="section-view active space-y-6">
+      <div class="pz-hero-bg rounded-2xl p-6 sm:p-7 text-white shadow-xl relative overflow-hidden border border-white/10">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-5 relative z-10">
+          <div class="space-y-2 max-w-2xl">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-pink-500/20 border border-pink-400/30 text-pink-200 text-xs font-bold">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-cyan-300"></i> PRINT ZONE &bull; An Innovation of Creative Packaging
+            </span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight font-display pz-gradient-text">Production Control Dashboard</h2>
+            <p class="text-sm text-slate-200 leading-relaxed">
+              Party &rarr; Order &rarr; Pending &rarr; Challan &rarr; Vendor &rarr; Cutting &rarr; Pasting &rarr; Ready &rarr; Dispatch &rarr; Accountant (Tally &amp; Bilty).
+            </p>
+            <div class="flex flex-wrap gap-2.5 pt-2">
+              <button type="button" onclick="navTo('party-order')" class="btn-press px-4 py-2 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 text-white text-xs font-extrabold shadow-lg shadow-pink-500/30 transition">+ New Order</button>
+              <button type="button" onclick="quickAction('challan')" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-cyan-200 text-xs font-extrabold transition">+ Create New Challan</button>
+            </div>
+          </div>
+          <img src="/static/img/logo.jpg" alt="Print Zone logo" class="dashboard-brand-logo logo-float" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4" id="kpiGrid"></div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="glass-card rounded-2xl p-5 card-lift hover:border-pink-500/40">
+          <h3 class="font-bold text-slate-100 text-sm mb-3">Order Pipeline Breakdown</h3>
+          <div class="relative h-72">
+            <canvas id="pipelineChart"></canvas>
+            <div id="pipelineEmpty" class="hidden absolute inset-0 flex flex-col items-center justify-center gap-2 text-center">
+              <i data-lucide="bar-chart-3" class="w-7 h-7 text-slate-500"></i>
+              <p class="text-sm font-semibold text-slate-300">Your order pipeline will appear here</p>
+              <p class="text-xs text-slate-500">Create your first order to see progress.</p>
+            </div>
+          </div>
+        </div>
+        <div class="glass-card rounded-2xl p-5 card-lift hover:border-pink-500/40">
+          <h3 class="font-bold text-slate-100 text-sm mb-3">Paper Stock Net Balance (Sheets)</h3>
+          <div class="relative h-72">
+            <canvas id="stockChart"></canvas>
+            <div id="stockEmpty" class="hidden absolute inset-0 flex flex-col items-center justify-center gap-2 text-center">
+              <i data-lucide="layers" class="w-7 h-7 text-slate-500"></i>
+              <p class="text-sm font-semibold text-slate-300">No stock recorded yet</p>
+              <p class="text-xs text-slate-500">Add paper stock to see balances here.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-2xl p-5">
+        <h3 class="font-bold text-slate-100 text-sm mb-3 flex items-center gap-2">
+          <i data-lucide="activity" class="w-4 h-4 text-pink-400"></i> Live Activity Feed
+        </h3>
+        <div id="activityFeed" class="divide-y divide-white/10 text-sm"></div>
+      </div>
+    </section>
+
+    <!-- 2. PARTY AND ORDER -->
+    <section id="sec-party-order" class="section-view space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Party &amp; Order</h2>
+          <p class="text-sm text-slate-400">Create a party first, then assign orders and track production from one place.</p>
+        </div>
+        <div class="inline-flex rounded-xl bg-white/10 p-1 self-start">
+          <button id="tabCreateOrderBtn" type="button" onclick="switchPartyOrderTab('order')" class="px-4 py-2 rounded-lg text-xs font-extrabold bg-pink-600 text-white shadow-sm transition">Order Creation</button>
+          <button id="tabCreatePartyBtn" type="button" onclick="switchPartyOrderTab('party')" class="px-4 py-2 rounded-lg text-xs font-extrabold text-slate-300 hover:text-white transition">+ Add Party</button>
+        </div>
+      </div>
+
+      <!-- Order Creation (Default) -->
+      <div id="orderPanel" class="glass-card rounded-2xl p-5 space-y-5">
+        <div class="flex items-center justify-between">
+          <h3 class="font-bold text-white flex items-center gap-2"><i data-lucide="package-plus" class="w-4 h-4 text-pink-400"></i> Order Creation</h3>
+          <span id="nextOrderIdPreview" class="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/30">Next: —</span>
+        </div>
+        <form id="orderForm" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Party Name *</label>
+            <select id="orderParty" required class="w-full px-3 py-2 rounded-lg border text-sm"></select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Item Name *</label>
+            <input id="orderName" type="text" required placeholder="Enter product or job name" class="w-full px-3 py-2 rounded-lg border text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Qty *</label>
+            <input id="orderQty" type="number" min="1" required placeholder="e.g. 5000" class="w-full px-3 py-2 rounded-lg border text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Size *</label>
+            <input id="orderSize" type="text" required placeholder="e.g. 4x2x6 inch" class="w-full px-3 py-2 rounded-lg border text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Printing Type *</label>
+            <select id="orderPrintType" required class="w-full px-3 py-2 rounded-lg border text-sm">
+              <option value="Lamination">Lamination</option>
+              <option value="Drip-Off">Drip-Off</option>
+              <option value="Spot UV">Spot UV</option>
+              <option value="Matt">Matt</option>
+              <option value="UV">UV</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Job Type *</label>
+            <select id="orderJobType" required class="w-full px-3 py-2 rounded-lg border text-sm">
+              <option value="Box">Box</option>
+              <option value="Label">Label</option>
+              <option value="Sticker">Sticker</option>
+            </select>
+          </div>
+          <div class="sm:col-span-2 lg:col-span-3">
+            <button type="submit" class="py-2.5 px-6 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 text-white font-bold text-sm shadow-lg shadow-pink-500/25">+ Create Order</button>
+          </div>
+        </form>
+
+        <div class="pt-3 border-t border-white/10">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Order List</h4>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-white/5 text-slate-300 text-xs uppercase">
+                <tr>
+                  <th class="px-3 py-2">Order ID</th>
+                  <th class="px-3 py-2">Item Name &amp; Party</th>
+                  <th class="px-3 py-2">Size / Specs</th>
+                  <th class="px-3 py-2 text-right">Qty</th>
+                  <th class="px-3 py-2">Stage</th>
+                  <th class="px-3 py-2 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody id="allOrdersTable" class="divide-y divide-white/10"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-white/10">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-amber-300 mb-2">Pending Approval</h4>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-white/5 text-slate-300 text-xs uppercase">
+                <tr>
+                  <th class="px-3 py-2">Order ID</th>
+                  <th class="px-3 py-2">Item Name &amp; Party</th>
+                  <th class="px-3 py-2">Specs</th>
+                  <th class="px-3 py-2 text-right">Qty</th>
+                  <th class="px-3 py-2 text-right">Approval</th>
+                </tr>
+              </thead>
+              <tbody id="pendingApprovalTable" class="divide-y divide-white/10"></tbody>
+            </table>
+          </div>
+          <p class="mt-2 text-[11px] text-slate-400">Final approval moves an order into Pending Orders.</p>
+        </div>
+      </div>
+
+      <!-- Party Creation (Shown only after clicking Add Party) -->
+      <div id="partyPanel" class="hidden glass-card rounded-2xl p-5 space-y-5">
+        <h3 class="font-bold text-white flex items-center gap-2"><i data-lucide="user-plus" class="w-4 h-4 text-cyan-400"></i> Party Creation</h3>
+        <form id="partyForm" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Party Name *</label>
+            <input id="partyName" type="text" required placeholder="Enter party or company name" class="w-full px-3 py-2 rounded-lg border text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Mobile No. *</label>
+            <input id="partyMobile" type="text" required placeholder="Enter mobile number" class="w-full px-3 py-2 rounded-lg border text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Gmail</label>
+            <input id="partyGmail" type="email" placeholder="e.g. orders@gmail.com" class="w-full px-3 py-2 rounded-lg border text-sm" />
+          </div>
+          <div class="flex items-end">
+            <button type="submit" class="w-full py-2 px-4 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-sm">+ Save Party</button>
+          </div>
+        </form>
+        <div class="pt-3 border-t border-white/10">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Party List</h4>
+          <div id="partyList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. PENDING ORDERS -->
+    <section id="sec-pending" class="section-view space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+        <div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Pending Order</h2>
+        <p class="text-sm text-slate-400">Track design progress, completed work, and challan assignment without moving jobs into production.</p>
+        </div>
+        <div class="job-filter-tabs" role="group" aria-label="Filter jobs">
+          <button type="button" class="job-filter-btn active" data-job-filter="active" onclick="setPendingFilter('active')">Active pending</button>
+          <button type="button" class="job-filter-btn" data-job-filter="in-progress" onclick="setPendingFilter('in-progress')">Design in progress</button>
+          <button type="button" class="job-filter-btn" data-job-filter="completed" onclick="setPendingFilter('completed')">Design completed</button>
+          <button type="button" class="job-filter-btn" data-job-filter="awaiting-challan" onclick="setPendingFilter('awaiting-challan')">Awaiting challan</button>
+          <button type="button" class="job-filter-btn" data-job-filter="assigned" onclick="setPendingFilter('assigned')">Challan assigned</button>
+        </div>
+      </div>
+      <div class="glass-card rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-white/5 text-slate-300 text-xs uppercase">
+              <tr>
+                <th class="px-4 py-3">Order ID</th>
+                <th class="px-4 py-3">Item Name &amp; Party</th>
+                <th class="px-4 py-3">Specs</th>
+                <th class="px-4 py-3 text-right">Qty</th>
+                <th class="px-4 py-3">Design Status</th>
+                <th class="px-4 py-3">Challan / Vendor</th>
+              </tr>
+            </thead>
+            <tbody id="pendingTable" class="divide-y divide-white/10"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. CHALLAN -->
+    <section id="sec-challan" class="section-view full-screen-workflow space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Challan</h2>
+          <p class="text-sm text-slate-400">Vendor-specific challan IDs track assigned jobs and paper. Receiving a challan automatically starts production.</p>
+        </div>
+        <div class="inline-flex rounded-xl bg-white/10 p-1 self-start">
+          <button id="tabChallanListBtn" type="button" onclick="switchChallanTab('list')" class="px-4 py-2 rounded-lg text-xs font-extrabold bg-cyan-600 text-white transition">Challan List</button>
+          <button id="tabAddChallanBtn" type="button" onclick="switchChallanTab('add')" class="px-4 py-2 rounded-lg text-xs font-extrabold text-slate-300 hover:text-white transition">+ Add New Challan</button>
+        </div>
+      </div>
+
+      <!-- Challan List (Default) -->
+      <div id="challanListPanel" class="glass-card rounded-2xl overflow-hidden">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 pb-0">
+          <div class="rounded-xl border border-white/10 bg-white/5 p-3">
+            <span class="text-xs text-slate-400">Challans sent to vendors</span>
+            <strong id="challansSentCount" class="block text-xl text-white">0</strong>
+          </div>
+          <div class="rounded-xl border border-white/10 bg-white/5 p-3">
+            <span class="text-xs text-slate-400">Challans received from vendors</span>
+            <strong id="challansReceivedCount" class="block text-xl text-white">0</strong>
+          </div>
+        </div>
+        <div id="challanStockRequirement" class="hidden mx-4 mt-3 rounded-xl border border-amber-400/30 bg-amber-500/10 p-3"></div>
+        <div class="workflow-filters">
+          <label>Party
+            <select id="challanPartyFilter" onchange="setChallanFilter('party', this.value)" aria-label="Filter challans by party"></select>
+          </label>
+          <label>Vendor
+            <select id="challanVendorFilter" onchange="setChallanFilter('vendor', this.value)" aria-label="Filter challans by vendor"></select>
+          </label>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-white/5 text-slate-300 text-xs uppercase">
+              <tr>
+                <th class="px-4 py-3">Challan No.</th>
+                <th class="px-4 py-3">Sent Date</th>
+                <th class="px-4 py-3">Vendor</th>
+                <th class="px-4 py-3 text-right">Quantity</th>
+                <th class="px-4 py-3">Paper Size</th>
+                <th class="px-4 py-3">Paper Type</th>
+                <th class="px-4 py-3">GSM</th>
+                <th class="px-4 py-3 text-center">Product Count</th>
+                <th class="px-4 py-3">Quality</th>
+                <th class="px-4 py-3">Current Status</th>
+                <th class="px-4 py-3 text-center">Update Status</th>
+              </tr>
+            </thead>
+            <tbody id="challanTable" class="divide-y divide-white/10"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Add New Challan -->
+      <div id="challanAddPanel" class="hidden glass-card rounded-2xl p-5 space-y-4">
+        <h3 class="font-bold text-white text-sm">Add New Challan</h3>
+        <form id="challanForm" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Vendor *</label>
+            <select id="chVendorSelect" required onchange="updateChallanPreview()" class="w-full px-3 py-2 rounded-lg border text-sm">
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Job Type *</label>
+            <select id="chJobType" required class="w-full px-3 py-2 rounded-lg border text-sm">
+              <option value="" disabled selected>Select job type</option>
+              <option value="Box">Box</option>
+              <option value="Label">Label</option>
+              <option value="Sticker">Sticker</option>
+            </select>
+          </div>
+          <div id="chVendorManualWrap" class="hidden">
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Manual Vendor *</label>
+            <input id="chVendorManual" type="text" oninput="updateChallanPreview()" placeholder="Vendor name" class="w-full px-3 py-2 rounded-lg border text-sm" />
+          </div>
+          <div class="sm:col-span-2 lg:col-span-4">
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-2">Design-completed jobs to include</label>
+            <div id="challanEligibleJobs" class="challan-jobs-list grid grid-cols-1 md:grid-cols-2 gap-2 rounded-xl border border-white/10 bg-white/5 p-3"></div>
+            <p class="mt-1 text-[11px] text-slate-400">Select multiple unassigned completed jobs for this vendor. You can also create a challan without jobs and assign them later.</p>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Paper Type *</label>
+            <input id="chPaperType" type="text" required oninput="updateChallanPreview()" placeholder="e.g. Art Card" class="w-full px-3 py-2 rounded-lg border text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Sheet Size *</label>
+            <input id="chPaperSize" type="text" required oninput="updateChallanPreview()" placeholder="e.g. 23x36" class="w-full px-3 py-2 rounded-lg border text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-1">GSM *</label>
+            <input id="chGsm" type="number" min="1" required oninput="updateChallanPreview()" placeholder="e.g. 300" class="w-full px-3 py-2 rounded-lg border text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Paper Qty Sent to Vendor *</label>
+            <input id="chPaperQty" type="number" min="1" required placeholder="e.g. 2000" class="w-full px-3 py-2 rounded-lg border text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Quality *</label>
+            <select id="chQuality" required onchange="toggleChallanQualityManual()" class="w-full px-3 py-2 rounded-lg border text-sm">
+              <option value="" disabled selected>Select quality</option>
+              <option>Dripoff</option><option>Lamination</option><option>Matt Spot</option>
+              <option>Spot UV</option><option>Leaf</option><option>Metallic Box</option><option value="Other">Other</option>
+            </select>
+          </div>
+          <div id="chQualityManualWrap" class="hidden">
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Other Quality *</label>
+            <input id="chQualityManual" type="text" placeholder="Enter quality" class="w-full px-3 py-2 rounded-lg border text-sm" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Paper Sent By *</label>
+            <select id="chPaperSentBy" required onchange="toggleChallanSentByManual()" class="w-full px-3 py-2 rounded-lg border text-sm">
+              <option value="" disabled selected>Select sender</option>
+              <option>Printzone</option><option>Darpan</option><option>Gyan</option><option>Kapil</option><option value="Other">Other</option>
+            </select>
+          </div>
+          <div id="chPaperSentByManualWrap" class="hidden">
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Other Sender *</label>
+            <input id="chPaperSentByManual" type="text" placeholder="Enter sender" class="w-full px-3 py-2 rounded-lg border text-sm" />
+          </div>
+          <div class="sm:col-span-2 bg-white/5 rounded-xl px-4 py-2 border border-white/10 flex flex-col justify-center">
+            <span class="text-[11px] font-bold text-cyan-300">Auto-Generated ID: <span id="nextChPreviewId">—</span></span>
+            <span id="autoFetchProductsPreview" class="text-xs text-slate-300 truncate">0 products assigned from Pending Orders</span>
+            <span id="chVendorStockPreview" class="text-xs text-slate-300">Available Stock at Vendor: —</span>
+          </div>
+          <div class="flex items-end">
+            <button type="submit" class="w-full py-2.5 px-4 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-sm">+ Create New Challan</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- 5. VENDORS -->
+    <section id="sec-vendor" class="section-view space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Vendors &amp; Sent Challans</h2>
+          <p class="text-sm text-slate-400">Manage your vendor directory and track sent challans.</p>
+        </div>
+        <form id="addVendorForm" class="flex gap-2">
+          <input id="newVendorName" type="text" required placeholder="Add Vendor Name..." class="px-3 py-2 rounded-xl border text-xs w-44" />
+          <input id="newVendorSpec" type="text" placeholder="Specialty (e.g. UV)" class="px-3 py-2 rounded-xl border text-xs w-36" />
+          <button type="submit" class="px-3.5 py-2 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-500 text-white text-xs font-bold">+ Add Vendor</button>
+        </form>
+      </div>
+      <div class="workflow-filters">
+        <label>Party
+          <select id="vendorPartyFilter" onchange="setVendorFilter('party', this.value)" aria-label="Filter vendor records by party"></select>
+        </label>
+        <label>Vendor
+          <select id="vendorFilter" onchange="setVendorFilter('vendor', this.value)" aria-label="Filter vendor records by vendor"></select>
+        </label>
+      </div>
+      <div id="vendorCardsGrid" class="grid grid-cols-1 lg:grid-cols-2 gap-5"></div>
+    </section>
+
+    <!-- 6. PRODUCTION -->
+    <section id="sec-production" class="section-view full-screen-workflow space-y-5">
+      <div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Production (Automated)</h2>
+        <p class="text-sm text-slate-400">Receipt starts the workflow automatically. Complete or skip optional lamination before cutting and pasting.</p>
+      </div>
+      <div class="glass-card rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-white/5 text-slate-300 text-xs uppercase">
+              <tr>
+                <th class="px-4 py-3">Order / Item Name</th>
+                <th class="px-4 py-3">Challan No.</th>
+                <th class="px-4 py-3">Current stage</th>
+                <th class="px-4 py-3">Action</th>
+              </tr>
+            </thead>
+            <tbody id="productionTable" class="divide-y divide-white/10"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. DISPATCH -->
+    <section id="sec-dispatch" class="section-view space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Dispatch Status</h2>
+          <p class="text-sm text-slate-400">Manage fulfillment, upload product photos, and attach JPG, PNG, or PDF Builty receipts.</p>
+        </div>
+        <div class="dispatch-filter-tabs" role="group" aria-label="Filter dispatch orders">
+          <button type="button" class="dispatch-filter-btn active" data-dispatch-filter="all" onclick="setDispatchFilter('all')">All <span id="dispatchCountAll">0</span></button>
+          <button type="button" class="dispatch-filter-btn" data-dispatch-filter="Ready" onclick="setDispatchFilter('Ready')">Ready <span id="dispatchCountReady">0</span></button>
+          <button type="button" class="dispatch-filter-btn" data-dispatch-filter="Dispatched" onclick="setDispatchFilter('Dispatched')">Dispatched <span id="dispatchCountDispatched">0</span></button>
+          <button type="button" class="dispatch-filter-btn" data-dispatch-filter="Delivered" onclick="setDispatchFilter('Delivered')">Delivered <span id="dispatchCountDelivered">0</span></button>
+        </div>
+      </div>
+      <div class="glass-card rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-white/5 text-slate-300 text-xs uppercase">
+              <tr>
+                <th class="px-4 py-3">Order ID</th>
+                <th class="px-4 py-3">Item Name &amp; Party</th>
+                <th class="px-4 py-3">Dispatch Date</th>
+                <th class="px-4 py-3 text-right">Qty</th>
+                <th class="px-4 py-3">Rate (&#8377;)</th>
+                <th class="px-4 py-3">Status</th>
+                <th class="px-4 py-3">Product Image</th>
+                <th class="px-4 py-3">Builty receipt</th>
+              </tr>
+            </thead>
+            <tbody id="dispatchTable" class="divide-y divide-white/10"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. ACCOUNTANT (TALLY + BILTY) -->
+    <section id="sec-accountant" class="section-view space-y-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Accountant (Tally &amp; Bilty)</h2>
+          <p class="text-sm text-slate-400">Import or export Tally data and view Builty receipts attached during dispatch.</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <label class="cursor-pointer px-4 py-2 rounded-xl bg-lime-600 hover:bg-lime-500 text-white text-xs font-extrabold transition">
+            Import Tally CSV / JSON
+            <input id="tallyFileInput" type="file" accept=".csv,.json,.txt" class="hidden" />
+          </label>
+          <button type="button" onclick="exportTallyCsv()" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-cyan-200 text-xs font-extrabold transition">
+            Export Dispatched to Tally CSV
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="glass-card rounded-2xl p-5 space-y-3">
+          <h3 class="font-bold text-white text-sm">Dispatched Orders &amp; Bilty Image Upload</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-white/5 text-slate-300 text-xs uppercase">
+                <tr>
+                  <th class="px-3 py-2">Order</th>
+                  <th class="px-3 py-2 text-right">Amount (&#8377;)</th>
+                  <th class="px-3 py-2">Bilty Image</th>
+                </tr>
+              </thead>
+              <tbody id="accountantDispatchTable" class="divide-y divide-white/10"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-5 space-y-3">
+          <h3 class="font-bold text-white text-sm">Imported Tally Ledger</h3>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-white/5 text-slate-300 text-xs uppercase">
+                <tr>
+                  <th class="px-3 py-2">Date</th>
+                  <th class="px-3 py-2">Party / Ledger</th>
+                  <th class="px-3 py-2">Voucher</th>
+                  <th class="px-3 py-2 text-right">Amount</th>
+                </tr>
+              </thead>
+              <tbody id="tallyTable" class="divide-y divide-white/10"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. PAPER STOCK -->
+    <section id="sec-paper-stock" class="section-view space-y-6">
+      <div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Paper Stock</h2>
+        <p class="text-sm text-slate-400">Track paper quantities and transfers across Printzone and vendor locations.</p>
+      </div>
+
+      <div id="stockSummaryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-4 glass-card rounded-2xl p-5 space-y-4">
+          <h3 class="font-bold text-white flex items-center gap-2"><i data-lucide="plus-circle" class="w-4 h-4 text-emerald-400"></i> Add / Receive Paper (+)</h3>
+          <form id="addStockForm" class="space-y-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Paper Type *</label>
+              <input id="addPaperType" required placeholder="e.g. Art Card" class="w-full px-3 py-2 rounded-lg border text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Paper Size *</label>
+              <input id="addPaperSize" required placeholder="e.g. 23x36" class="w-full px-3 py-2 rounded-lg border text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 uppercase mb-1">GSM *</label>
+              <input id="addPaperGsm" type="number" min="1" required placeholder="e.g. 300" class="w-full px-3 py-2 rounded-lg border text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Quantity *</label>
+              <input id="addPaperQty" type="number" min="1" required placeholder="e.g. 5000" class="w-full px-3 py-2 rounded-lg border text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Source *</label>
+              <select id="addPaperSource" required class="w-full px-3 py-2 rounded-lg border text-sm">
+                <option>New</option><option>Kapil</option><option>Darpan</option><option>Gyan</option>
+              </select>
+            </div>
+            <button type="submit" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm">+ Add Paper Stock</button>
+          </form>
+        </div>
+
+        <div class="lg:col-span-8 glass-card rounded-2xl p-5 space-y-4">
+          <h3 class="font-bold text-white flex items-center gap-2"><i data-lucide="send" class="w-4 h-4 text-rose-400"></i> Sent Paper to Vendor (-)</h3>
+          <form id="sendPaperForm" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div>
+              <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Paper Type *</label>
+              <select id="sendPaperType" required onchange="selectPaperSku('sendPaperType')" class="w-full px-3 py-2 rounded-lg border text-sm"></select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Paper Size *</label>
+              <input id="sendPaperSize" required readonly placeholder="Paper size" class="w-full px-3 py-2 rounded-lg border text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 uppercase mb-1">GSM *</label>
+              <input id="sendPaperGsm" type="number" min="1" required readonly placeholder="GSM" class="w-full px-3 py-2 rounded-lg border text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Qty *</label>
+              <input id="sendPaperQty" type="number" min="1" required placeholder="e.g. 1500" class="w-full px-3 py-2 rounded-lg border text-sm" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Sent To *</label>
+              <select id="sendVendor" required class="w-full px-3 py-2 rounded-lg border text-sm"></select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Sent By *</label>
+              <select id="sendPaperBy" required class="w-full px-3 py-2 rounded-lg border text-sm"></select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Challan No. *</label>
+              <select id="sendChallan" required onchange="selectChallanForPaper('send')" class="w-full px-3 py-2 rounded-lg border text-sm"></select>
+            </div>
+            <div class="sm:col-span-2 lg:col-span-4">
+              <button type="submit" class="py-2 px-5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-sm">Send Paper</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-2xl p-5 space-y-4">
+        <h3 class="font-bold text-white text-sm">Receive Paper from Vendor</h3>
+        <form id="receivePaperForm" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+          <select id="receivePaperType" required onchange="selectPaperSku('receivePaperType')" aria-label="Paper type" class="px-3 py-2 rounded-lg border text-sm"></select>
+          <input id="receivePaperSize" required readonly placeholder="Paper size" class="px-3 py-2 rounded-lg border text-sm" />
+          <input id="receivePaperGsm" type="number" min="1" required readonly placeholder="GSM" class="px-3 py-2 rounded-lg border text-sm" />
+          <input id="receivePaperQty" type="number" min="1" required placeholder="Quantity" class="px-3 py-2 rounded-lg border text-sm" />
+          <select id="receivePaperVendor" required aria-label="Received from vendor" class="px-3 py-2 rounded-lg border text-sm"></select>
+          <select id="receivePaperChallan" required onchange="selectChallanForPaper('receive')" aria-label="Related challan" class="px-3 py-2 rounded-lg border text-sm lg:col-span-2"></select>
+          <button type="submit" class="py-2 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm">Receive Paper</button>
+        </form>
+      </div>
+
+      <div class="glass-card rounded-2xl p-5 space-y-3">
+        <h3 class="font-bold text-white text-sm">Available Stock by Location</h3>
+        <div id="stockLocationsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3"></div>
+      </div>
+
+      <div class="glass-card rounded-2xl p-5 space-y-3">
+        <h3 class="font-bold text-white text-sm">All Sent &amp; Received Paper Ledger</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-white/5 text-slate-300 text-xs uppercase">
+              <tr>
+                <th class="px-3 py-2">#</th>
+                <th class="px-3 py-2">Type</th>
+                <th class="px-3 py-2">Paper Type / Size / GSM</th>
+                <th class="px-3 py-2 text-right">Qty</th>
+                <th class="px-3 py-2">Vendor / Note</th>
+                <th class="px-3 py-2">Challan No.</th>
+                <th class="px-3 py-2 text-right">Balance</th>
+              </tr>
+            </thead>
+            <tbody id="stockFlowTable" class="divide-y divide-white/10"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="sec-team" class="section-view space-y-6">
+      <div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Team Access</h2>
+        <p class="text-sm text-slate-400">Create and remove team accounts. Assign a team ID and role-based access.</p>
+      </div>
+      <div class="glass-card rounded-2xl p-5 space-y-4">
+        <h3 class="font-bold text-white">Create team account</h3>
+        <form id="teamMemberForm" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+          <input id="teamName" required placeholder="Full name" class="px-3 py-2 rounded-lg border text-sm" />
+          <input id="teamUsername" required minlength="3" placeholder="Username" class="px-3 py-2 rounded-lg border text-sm" />
+          <input id="teamEmail" required type="email" placeholder="Email" class="px-3 py-2 rounded-lg border text-sm" />
+          <input id="teamPhone" required type="tel" placeholder="Phone" class="px-3 py-2 rounded-lg border text-sm" />
+          <input id="teamPassword" required type="password" minlength="8" placeholder="Initial password (8+ chars)" class="px-3 py-2 rounded-lg border text-sm" />
+          <input id="teamId" placeholder="Team ID (optional)" class="px-3 py-2 rounded-lg border text-sm" />
+          <select id="teamRole" class="px-3 py-2 rounded-lg border text-sm">
+            <option value="Manager">Manager — all sections, no team changes</option>
+            <option value="Admin">Admin — all sections and team access</option>
+            <option value="User">User — orders, parties, challans, vendors, production</option>
+            <option value="Accountant">Accountant — Dispatch, Accountant, Paper Stock</option>
+          </select>
+          <button type="submit" class="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-sm font-bold">Create team account</button>
+        </form>
+      </div>
+      <div class="glass-card rounded-2xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-white/5 text-slate-300 text-xs uppercase">
+              <tr><th class="px-4 py-3">Name</th><th class="px-4 py-3">Username</th><th class="px-4 py-3">Role</th><th class="px-4 py-3">Team ID</th><th class="px-4 py-3">Action</th></tr>
+            </thead>
+            <tbody id="teamMembersTable" class="divide-y divide-white/10"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="/static/js/app.js"></script>
+  <script src="/static/js/auth.js"></script>
+</body>
+</html>
