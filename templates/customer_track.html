@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Track Your Order — PRINT ZONE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+  <main class="glass-card rounded-3xl max-w-xl w-full p-6 sm:p-8 space-y-6">
+    <header class="text-center space-y-2">
+      <img src="/static/img/logo.jpg" alt="Print Zone" class="w-16 h-16 object-cover rounded-2xl mx-auto" />
+      <h1 class="text-3xl text-white font-display">Your orders</h1>
+      <p class="text-sm text-slate-300">View orders associated with your registered email address.</p>
+    </header>
+    <p id="trackMessage" role="status" aria-live="polite" class="text-center text-sm rounded-xl p-3">Loading your orders…</p>
+    <section id="trackResult" class="space-y-3" aria-live="polite"></section>
+    <button id="customerLogout" type="button" class="w-full py-3 rounded-xl bg-white/10 text-cyan-200 font-bold">Sign out</button>
+  </main>
+  <script src="/static/js/track.js"></script>
+</body>
+</html>
